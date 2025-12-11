@@ -2,9 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>CSUN Map Quiz</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Maps API -->
+    <script
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAURxMTldiT3laI776lRglasJlX31R9hNY&libraries=geometry&callback=initMap"
+            defer>
+    </script>
+
 </head>
 <body>
+    <h1>CSUN Map Quiz</h1>
 
+    <div id="container">
+        <div id="content">
+            <h2>Double-click the correct location on the map</h2>
+            <div id="timerContainer">
+                Timer: <span id="timer">0</span><br>
+            </div>
+            <div id="qa"></div>
+            <div id="score"></div>
+            <button id="playButton">Play</button>
+        </div>
+
+        <div id="map"></div>
+    </div>
+        <script src="script.js"></script>
 </body>
 </html>
