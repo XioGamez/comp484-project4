@@ -37,29 +37,40 @@ function initMap() {
 }
 
 function startGame() {
-    // resets circles
+    // reset circles
     circles.forEach(circle => circle.setMap(null));
     circles = [];
 
-    // reset game state
-    score = 0;
-    questionIndex = 0;
+    // reset timer
+    if (timer) clearInterval(timer);
     secondsElapsed = 0;
-    document.getElementById("qa").innerHTML = "";
-    document.getElementById("score").textContent = "";
-
-    document.getElementById("timerContainer").style.visibility = "visible"; // show timer
     document.getElementById("timer").textContent = "0s";
 
-    // hide button
+    // reset game
+    score = 0;
+    questionIndex = 0;
+
+    // clear UI
+    document.getElementById("qa").innerHTML = "";
+    document.getElementById("score").textContent = "";
+    document.getElementById("timerContainer").style.visibility = "visible";
+
+    // remove old listener
+    if (answerListener) {
+        google.maps.event.removeListener(answerListener);
+        answerListener = null;
+    }
+
+    // reset listener
+    answerListener = map.addListener("dblclick", handleAnswer);
+
+    // reset button
     const playButton = document.getElementById("playButton");
     playButton.style.display = "none";
 
-    startTimer(); // start timer
-
-    nextQuestion(); // start first question
-
-    map.addListener("dblclick", handleAnswer); // double-click on map
+    // start game
+    startTimer();
+    nextQuestion();
 }
 
 // start timer
@@ -117,9 +128,15 @@ function handleAnswer(event) {
 
 function endGame() {
     stopTimer();
-    document.getElementById("score").textContent = `${score} Correct, (${5 - score} Incorrect)`; // shows results
 
-    // show button again
+    if (answerListener) {
+        google.maps.event.removeListener(answerListener);
+        answerListener = null;
+    }
+
+    document.getElementById("score").textContent =
+        `${score} Correct, (${quizLocations.length - score} Incorrect)`;
+
     const playButton = document.getElementById("playButton");
     playButton.style.display = "inline-block";
     playButton.textContent = "Play Again";
