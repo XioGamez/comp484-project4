@@ -5,6 +5,7 @@ let timer;
 const answerRadius = 50; // radius for acceptable "correct" area
 
 let circles = [];
+let answerListener = null;
 
 const cleanMap = [
     { elementType: "labels.icon", stylers: [{ visibility: "off" }] }, // hides icons
@@ -37,40 +38,28 @@ function initMap() {
 }
 
 function startGame() {
-    // reset circles
+    // resets circles
     circles.forEach(circle => circle.setMap(null));
     circles = [];
 
-    // reset timer
-    if (timer) clearInterval(timer);
-    secondsElapsed = 0;
-    document.getElementById("timer").textContent = "0s";
-
-    // reset game
+    // reset game state
     score = 0;
     questionIndex = 0;
-
-    // clear UI
+    secondsElapsed = 0;
     document.getElementById("qa").innerHTML = "";
     document.getElementById("score").textContent = "";
-    document.getElementById("timerContainer").style.visibility = "visible";
 
-    // remove old listener
-    if (answerListener) {
-        google.maps.event.removeListener(answerListener);
-        answerListener = null;
-    }
+    document.getElementById("timerContainer").style.visibility = "visible"; // show timer
+    document.getElementById("timer").textContent = "0s";
 
-    // reset listener
-    answerListener = map.addListener("dblclick", handleAnswer);
-
-    // reset button
+    // hide button
     const playButton = document.getElementById("playButton");
     playButton.style.display = "none";
 
-    // start game
-    startTimer();
-    nextQuestion();
+    startTimer(); // start timer
+    nextQuestion(); // start first question
+
+    answerListener = map.addListener("dblclick", handleAnswer); // double-click on map
 }
 
 // start timer
@@ -128,18 +117,18 @@ function handleAnswer(event) {
 
 function endGame() {
     stopTimer();
+    document.getElementById("score").textContent = `${score} Correct, (${5 - score} Incorrect)`; // shows results
 
+    // show button again
+    const playButton = document.getElementById("playButton");
+    playButton.style.display = "inline-block";
+    playButton.textContent = "Play Again";
+
+    // resets listener
     if (answerListener) {
         google.maps.event.removeListener(answerListener);
         answerListener = null;
     }
-
-    document.getElementById("score").textContent =
-        `${score} Correct, (${quizLocations.length - score} Incorrect)`;
-
-    const playButton = document.getElementById("playButton");
-    playButton.style.display = "inline-block";
-    playButton.textContent = "Play Again";
 }
 
 document.getElementById("playButton").addEventListener("click", startGame);
