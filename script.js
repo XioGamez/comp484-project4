@@ -4,6 +4,8 @@ let questionIndex = 0;
 let timer;
 const answerRadius = 50; // radius for acceptable "correct" area
 
+let circles = [];
+
 const cleanMap = [
     { elementType: "labels.icon", stylers: [{ visibility: "off" }] }, // hides icons
     { elementType: "labels.text", stylers: [{ visibility: "off" }] } // hides all text
@@ -16,7 +18,6 @@ const quizLocations = [
     { name: "Oasis Wellness Center", lat: 34.239634859245534, lng: -118.52585849407336 }, // required location
     { name: "Parking Structure B3", lat: 34.23823074370934, lng: -118.53228589881142},
     { name: "Magnolia Hall", lat: 34.23944208879406, lng: -118.52828396955027},
-    // { name: "Monterey Hall", lat: 34.23607188090367, lng: -118.52358857309942}
 ];
 
 // initial map
@@ -36,6 +37,10 @@ function initMap() {
 }
 
 function startGame() {
+    // resets circles
+    circles.forEach(circle => circle.setMap(null));
+    circles = [];
+
     // reset game state
     score = 0;
     questionIndex = 0;
@@ -84,7 +89,7 @@ function handleAnswer(event) {
     const distance = google.maps.geometry.spherical.computeDistanceBetween(userLatLng, correctLatLng); // calculates distance
 
     // draw circle
-    new google.maps.Circle({
+    const circle = new google.maps.Circle({
         strokeColor: distance <= answerRadius ? "green" : "red",
         strokeWeight: 2,
         fillColor: distance <= answerRadius ? "lightgreen" : "pink",
@@ -93,6 +98,7 @@ function handleAnswer(event) {
         radius: answerRadius,
         map: map
     });
+    circles.push(circle);
 
     const isCorrect = distance <= answerRadius;
 
